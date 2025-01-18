@@ -1,29 +1,27 @@
 import { Request, Response } from "express";
-import asyncHandler from "express-async-handler"; // Helper for handling async routes
-import OrderModel from "./order.schema"; // Import the Order model
-import { createResponse } from "../common/helper/response.hepler"; // Utility function for consistent responses // Import the IOrderDocument interface
-import { OrderStatus } from "./order.dto"; // Import OrderStatus enum for status updates
+import asyncHandler from "express-async-handler";
+import OrderModel from "./order.schema";
+import { createResponse } from "../common/helper/response.hepler";
+import { OrderStatus } from "./order.dto";
 
 // Create a new order
 export const createOrderHandler = asyncHandler(async (req: Request, res: Response): Promise<void> => {
   const { items, totalAmount, shippingAddress } = req.body;
-  const userId = req.user?._id; // Assuming the user is authenticated
+  const userId = req.user?._id;
 
   if (!userId) {
     res.status(401).send(createResponse(null, "User is not authenticated"));
     return;
   }
 
-  // Create a new order document
   const newOrder = new OrderModel({
     user: userId,
     items,
     totalAmount,
     shippingAddress,
-    status: OrderStatus.PENDING, // Default status is PENDING
+    status: OrderStatus.PENDING,
   });
 
-  // Save the order
   const order = await newOrder.save();
   res.status(201).send(createResponse(order, "Order created successfully"));
 });
@@ -57,10 +55,10 @@ export const getAllOrdersHandler = asyncHandler(async (req: Request, res: Respon
   res.send(createResponse(orders, "Orders fetched successfully"));
 });
 
-// Update order status (e.g., from Pending to Shipped)
+// Update order status
 export const updateOrderStatusHandler = asyncHandler(async (req: Request, res: Response): Promise<void> => {
   const orderId = req.params.id;
-  const { status } = req.body; // The new status to update (e.g., 'shipped', 'delivered', etc.)
+  const { status } = req.body;
 
   if (!Object.values(OrderStatus).includes(status)) {
     res.status(400).send(createResponse(null, "Invalid status"));
@@ -81,7 +79,7 @@ export const updateOrderStatusHandler = asyncHandler(async (req: Request, res: R
   res.send(createResponse(order, "Order status updated successfully"));
 });
 
-// Delete an order (if necessary, e.g., if the user wants to cancel it)
+// Delete an order
 export const deleteOrderHandler = asyncHandler(async (req: Request, res: Response): Promise<void> => {
   const orderId = req.params.id;
   const userId = req.user?._id;
@@ -98,16 +96,14 @@ export const deleteOrderHandler = asyncHandler(async (req: Request, res: Respons
 
 export const getOrderStatusHandler = asyncHandler(async (req: Request, res: Response): Promise<void> => {
     const orderId = req.params.id;
-    const userId = req.user?._id; // Assuming the user is authenticated
-  
-    // Find the order by ID and user
+    const userId = req.user?._id;
+
     const order = await OrderModel.findOne({ _id: orderId, user: userId });
-  
+
     if (!order) {
       res.status(404).send(createResponse(null, "Order not found"));
       return;
     }
-  
-    // Return the order status
+
     res.send(createResponse({ status: order.status }, "Order status fetched successfully"));
-  });
+});

@@ -2,7 +2,6 @@ import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
 import { createResponse } from "../helper/response.hepler";
 
-// Define the role type to match your User DTO
 type UserRole = "ADMIN" | "CUSTOMER";
 
 interface DecodedToken {

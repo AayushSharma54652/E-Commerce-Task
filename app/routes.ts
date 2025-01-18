@@ -5,7 +5,7 @@ import cartRoutes from "./cart/cart.route";
 import paymentRoutes from "./payment/payment.route";
 import orderRoutes from "./order/order.route";
 
-// routes
+
 const router = express.Router();
 
 router.use("/users", userRoutes);

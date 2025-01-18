@@ -11,7 +11,7 @@ interface DecodedToken {
   name: string;
 }
 
-// Helper function to get user from refresh token
+// Extracts user information from the refresh token
 const getUserFromToken = (req: Request): DecodedToken | null => {
   try {
     const refreshToken = req.cookies?.refreshToken;
@@ -28,7 +28,6 @@ const getUserFromToken = (req: Request): DecodedToken | null => {
   }
 };
 
-// Controller to create or get user's cart
 export const getOrCreateCartHandler = asyncHandler(async (req: Request, res: Response): Promise<void> => {
   const user = getUserFromToken(req);
   if (!user) {
@@ -46,7 +45,6 @@ export const getOrCreateCartHandler = asyncHandler(async (req: Request, res: Res
   res.send(createResponse(cart, "Cart retrieved successfully"));
 });
 
-// Controller to add an item to the cart
 export const addToCartHandler = asyncHandler(async (req: Request, res: Response): Promise<void> => {
   const user = getUserFromToken(req);
   if (!user) {
@@ -56,26 +54,19 @@ export const addToCartHandler = asyncHandler(async (req: Request, res: Response)
 
   const { productId, quantity } = req.body;
 
-  // Validate request body
   if (!productId || !quantity || quantity <= 0) {
     res.status(400).send(createResponse(null, "Invalid productId or quantity"));
     return;
   }
 
   try {
-    console.log("Adding to cart for User ID:", user._id);
-    console.log("ProductId:", productId, "Quantity:", quantity);
-
     const updatedCart = await cartService.addItemToCart(user._id, productId, quantity);
-
     res.send(createResponse(updatedCart, "Item added to cart successfully"));
   } catch (error) {
-    console.error("Error in addToCartHandler:", error); // Detailed error logging
     res.status(500).send(createResponse(null, "Error adding item to cart"));
   }
 });
 
-// Controller to remove an item from the user's cart
 export const removeFromCartHandler = asyncHandler(async (req: Request, res: Response): Promise<void> => {
   if (!req.user) {
     res.status(401).send(createResponse(null, "User not authenticated"));
@@ -90,7 +81,6 @@ export const removeFromCartHandler = asyncHandler(async (req: Request, res: Resp
   res.send(createResponse(updatedCart, "Item removed from cart successfully"));
 });
 
-// Controller to update the quantity of an item in the user's cart
 export const updateItemQuantityHandler = asyncHandler(async (req: Request, res: Response): Promise<void> => {
   if (!req.user) {
     res.status(401).send(createResponse(null, "User not authenticated"));
@@ -106,7 +96,6 @@ export const updateItemQuantityHandler = asyncHandler(async (req: Request, res: 
   res.send(createResponse(updatedCart, "Item quantity updated successfully"));
 });
 
-// Controller to view the user's cart
 export const viewCartHandler = asyncHandler(async (req: Request, res: Response): Promise<void> => {
   if (!req.user) {
     res.status(401).send(createResponse(null, "User not authenticated"));
@@ -114,7 +103,6 @@ export const viewCartHandler = asyncHandler(async (req: Request, res: Response):
   }
 
   const userId = req.user._id;
-
   const cart = await cartService.getCartByUserId(userId);
 
   if (!cart) {
@@ -125,7 +113,6 @@ export const viewCartHandler = asyncHandler(async (req: Request, res: Response):
   res.send(createResponse(cart, "Cart retrieved successfully"));
 });
 
-// Controller to clear all items in the user's cart
 export const clearCartHandler = asyncHandler(async (req: Request, res: Response): Promise<void> => {
   if (!req.user) {
     res.status(401).send(createResponse(null, "User not authenticated"));

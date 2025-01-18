@@ -1,6 +1,6 @@
 import { body } from "express-validator";
 
-// Validation for the payment details
+
 export const paymentValidation = [
   body("amount").isFloat({ gt: 0 }).withMessage("Amount should be greater than 0"),
   body("cardNumber").isLength({ min: 16, max: 16 }).withMessage("Card number should be 16 digits"),

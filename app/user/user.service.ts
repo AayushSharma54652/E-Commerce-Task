@@ -1,20 +1,17 @@
 import { IUser, CreateUserDto, LoginUserDto, UpdateUserDto } from "./user.dto";
 import UserModel from "./user.schema";
 import bcrypt from "bcryptjs";
-import { generateTokens } from "../common/helper/token.helper"; // Import token helper for generating tokens
+import { generateTokens } from "../common/helper/token.helper";
 import createHttpError from "http-errors";
 
-// Register a new user
 export const createUser = async (userDto: CreateUserDto): Promise<IUser> => {
   const { name, email, password, role } = userDto;
 
-  // Check if the user already exists
   const existingUser = await UserModel.findOne({ email });
   if (existingUser) {
     throw createHttpError(400, "User already exists");
   }
 
-  // Hash the password before saving
   const hashedPassword = await bcrypt.hash(password, 10);
 
   const newUser = new UserModel({
@@ -25,26 +22,22 @@ export const createUser = async (userDto: CreateUserDto): Promise<IUser> => {
   });
 
   await newUser.save();
-  return newUser; // Return the created user
+  return newUser;
 };
 
-// Login a user
 export const loginUser = async (loginDto: LoginUserDto) => {
   const { email, password } = loginDto;
 
-  // Find the user by email
   const user = await UserModel.findOne({ email });
   if (!user) {
     throw createHttpError(401, "Invalid credentials");
   }
 
-  // Check if the provided password matches the stored password
   const isMatch = await bcrypt.compare(password, user.password);
   if (!isMatch) {
     throw createHttpError(401, "Invalid credentials");
   }
 
-  // Generate access and refresh tokens after successful login
   const { accessToken, refreshToken } = generateTokens({
     _id: user._id.toString(),
     email: user.email,
@@ -57,7 +50,6 @@ export const loginUser = async (loginDto: LoginUserDto) => {
   };
 };
 
-// Update user details
 export const updateUser = async (userId: string, updateDto: UpdateUserDto): Promise<IUser> => {
   const updatedUser = await UserModel.findByIdAndUpdate(userId, updateDto, { new: true });
 
@@ -65,10 +57,9 @@ export const updateUser = async (userId: string, updateDto: UpdateUserDto): Prom
     throw createHttpError(404, "User not found");
   }
 
-  return updatedUser; // Return the updated user
+  return updatedUser;
 };
 
-// Get user details by ID
 export const getUserById = async (userId: string): Promise<IUser | null> => {
   const user = await UserModel.findById(userId);
   if (!user) {
@@ -79,6 +70,5 @@ export const getUserById = async (userId: string): Promise<IUser | null> => {
 };
 
 export const logoutUser = async (refreshToken: string): Promise<void> => {
-  // Remove the refresh token from the user's document
   await UserModel.findOneAndUpdate({ refreshToken }, { refreshToken: null });
 };

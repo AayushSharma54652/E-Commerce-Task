@@ -1,8 +1,7 @@
-import mongoose, { Schema, Document, CallbackError } from "mongoose";
-import bcrypt from "bcryptjs"; // For password hashing
-import { IUser } from "./user.dto"; // Import the IUser interface
+import mongoose, { Schema, Document } from "mongoose";
+import bcrypt from "bcryptjs";
+import { IUser } from "./user.dto";
 
-// User schema definition
 const UserSchema: Schema = new Schema<IUser & Document>(
   {
     name: {
@@ -13,19 +12,19 @@ const UserSchema: Schema = new Schema<IUser & Document>(
     email: {
       type: String,
       required: true,
-      unique: true, // Ensures email is unique in the database
-      lowercase: true, // Automatically convert email to lowercase
+      unique: true,
+      lowercase: true,
       trim: true,
     },
     password: {
       type: String,
       required: true,
-      minlength: 6, // Password length validation
+      minlength: 6,
     },
     refreshToken: {
       type: String,
       required: false,
-      default: null, // Refresh token is optional, only when user logs in
+      default: null,
     },
     role: {
       type: String,
@@ -35,14 +34,13 @@ const UserSchema: Schema = new Schema<IUser & Document>(
     },
     active: {
       type: Boolean,
-      default: true, // Default value for active status
+      default: true,
     },
   },
   {
-    timestamps: true, // Automatically adds createdAt and updatedAt fields
+    timestamps: true,
   }
 );
-
 
 const UserModel = mongoose.model<IUser & Document>("User", UserSchema);
 

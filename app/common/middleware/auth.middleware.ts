@@ -3,10 +3,10 @@ import jwt from "jsonwebtoken";
 import { createResponse } from "../helper/response.hepler";
 import { IUser, } from "../../user/user.dto";
 import { BaseSchema } from "../../common/dto/base.dto"
-// Define the User type for the request object
+
 type User = Omit<IUser, 'password' | 'refreshToken'>;
 
-// TokenPayload should match User type
+
 interface TokenPayload extends Omit<BaseSchema, 'deletedAt'> {
   _id: string;
   name: string;
@@ -17,7 +17,7 @@ interface TokenPayload extends Omit<BaseSchema, 'deletedAt'> {
   updatedAt?: Date;
 }
 
-// Helper function to extract payload without exp claim and sensitive data
+
 const extractPayload = (user: any): User => {
   const { exp, iat, password, refreshToken, ...payload } = user;
   return payload;

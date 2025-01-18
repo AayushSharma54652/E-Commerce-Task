@@ -1,6 +1,6 @@
 import { body } from "express-validator";
 
-// Validation rules for creating a user
+
 export const createUser = [
   body("name")
     .notEmpty()
@@ -31,7 +31,6 @@ export const createUser = [
     .withMessage("Active must be a boolean"),
 ];
 
-// Validation rules for updating a user
 export const updateUser = [
   body("name")
     .optional()
@@ -59,7 +58,7 @@ export const updateUser = [
     .withMessage("Active must be a boolean"),
 ];
 
-// Validation rules for user login
+
 export const loginUser = [
   body("email")
     .notEmpty()

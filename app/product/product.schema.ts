@@ -1,5 +1,5 @@
 import mongoose, { Document, Schema } from "mongoose";
-import { IProduct } from "./product.dto"; // Importing the IProduct interface from product.dto.ts
+import { IProduct } from "./product.dto";
 
 const productSchema: Schema = new Schema<IProduct>(
   {
@@ -16,7 +16,7 @@ const productSchema: Schema = new Schema<IProduct>(
     price: {
       type: Number,
       required: true,
-      min: 0, // Ensuring the price is not negative
+      min: 0,
     },
     category: {
       type: String,
@@ -26,23 +26,22 @@ const productSchema: Schema = new Schema<IProduct>(
     stockQuantity: {
       type: Number,
       required: true,
-      min: 0, // Ensuring stock quantity cannot be negative
+      min: 0,
     },
     images: {
-      type: [String], // Array of image URLs or file paths
+      type: [String],
       required: true,
     },
     isActive: {
       type: Boolean,
-      default: true, // Default to true if not specified
+      default: true,
     },
   },
   {
-    timestamps: true, // Automatically adds `createdAt` and `updatedAt` fields
+    timestamps: true,
   }
 );
 
-// Create and export the product model
 const ProductModel = mongoose.model<IProduct & Document>("Product", productSchema);
 
 export default ProductModel;

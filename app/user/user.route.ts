@@ -1,12 +1,11 @@
 import { Router } from "express";
 import * as userController from "./user.controller";
 import * as userValidation from "./user.validation";
-import { authMiddleware } from "../common/middleware/auth.middleware"; // Assuming auth middleware checks JWT
-import { catchError } from "../common/middleware/cath-error.middleware"; // Assuming custom error handler
+import { authMiddleware } from "../common/middleware/auth.middleware";
+import { catchError } from "../common/middleware/cath-error.middleware";
 
 const router = Router();
 
-// Route to register a new user
 router.post(
   "/register",
   userValidation.createUser,
@@ -14,7 +13,6 @@ router.post(
   userController.registerUserHandler
 );
 
-// Route to login a user
 router.post(
   "/login",
   userValidation.loginUser,
@@ -22,14 +20,12 @@ router.post(
   userController.loginUserHandler
 );
 
-// Route to get the current user's profile (protected)
 router.get(
   "/profile",
   authMiddleware,
   userController.getUserProfileHandler
 );
 
-// Route to update the current user's profile (protected)
 router.put(
   "/profile",
   authMiddleware,
@@ -38,10 +34,9 @@ router.put(
   userController.updateUserProfileHandler
 );
 
-// Route for logging out the user
 router.post(
   "/logout",
-  authMiddleware, // Optionally protect this route if needed
+  authMiddleware,
   catchError,
   userController.logoutUserHandler
 );

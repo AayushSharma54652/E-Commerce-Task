@@ -1,6 +1,6 @@
 import { body, param } from "express-validator";
 
-// Validation for adding an item to the cart
+
 export const addToCartValidation = [
   body("productId")
     .notEmpty()
@@ -15,7 +15,7 @@ export const addToCartValidation = [
     .withMessage("Quantity must be a positive integer"),
 ];
 
-// Validation for updating an item in the cart
+
 export const updateCartItemValidation = [
   param("cartItemId")
     .notEmpty()
@@ -29,7 +29,6 @@ export const updateCartItemValidation = [
     .withMessage("Quantity must be a positive integer"),
 ];
 
-// Validation for removing an item from the cart
 export const removeFromCartValidation = [
   param("cartItemId")
     .notEmpty()
@@ -38,7 +37,7 @@ export const removeFromCartValidation = [
     .withMessage("Invalid Cart item ID format"),
 ];
 
-// Validation for getting the cart by userId (e.g., to view cart)
+
 export const getCartValidation = [
   param("userId")
     .notEmpty()

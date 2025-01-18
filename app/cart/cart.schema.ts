@@ -1,18 +1,17 @@
 import mongoose, { Document, Schema } from "mongoose";
-import { CartItemDto } from "./cart.dto"; // Ensure this DTO file is properly imported
+import { CartItemDto } from "./cart.dto";
 
-// Define the CartItem schema to represent each product in the cart
 const CartItemSchema: Schema = new Schema(
   {
     productId: {
       type: Schema.Types.ObjectId,
-      ref: "Product", // Referencing the Product model
+      ref: "Product",
       required: true,
     },
     quantity: {
       type: Number,
       required: true,
-      min: 1, // Ensure the quantity is at least 1
+      min: 1,
     },
     productName: {
       type: String,
@@ -27,52 +26,45 @@ const CartItemSchema: Schema = new Schema(
       required: true,
     },
   },
-  { _id: false } // Prevent creation of an _id for cart items
+  { _id: false }
 );
 
-// Define the Cart schema to represent a user's cart
 const CartSchema: Schema = new Schema(
   {
     userId: {
       type: Schema.Types.ObjectId,
-      ref: "User", // Referencing the User model
+      ref: "User",
       required: true,
-      unique: true, // Ensure each user can only have one active cart
+      unique: true,
     },
     items: {
-      type: [CartItemSchema], // Array of CartItems
+      type: [CartItemSchema],
       default: [],
     },
     totalPrice: {
       type: Number,
-      default: 0, // Total price will be calculated dynamically
+      default: 0,
     },
   },
   {
-    timestamps: true, // Automatically adds createdAt and updatedAt fields
+    timestamps: true,
   }
 );
 
-// Define the type for CartItem
 interface CartItem {
-  productId: string; // productId should be a string (could also be ObjectId)
+  productId: string;
   quantity: number;
   productName: string;
   productPrice: number;
   totalItemPrice: number;
 }
 
-// Method to calculate total price dynamically
 CartSchema.methods.calculateTotalPrice = function () {
-  const totalPrice = this.items.reduce((total: number, item: CartItem) => {
-    return total + item.totalItemPrice; // Sum up the total price of each item in the cart
-  }, 0);
-
-  this.totalPrice = totalPrice; // Set the total price for the cart
+  const totalPrice = this.items.reduce((total: number, item: CartItem) => total + item.totalItemPrice, 0);
+  this.totalPrice = totalPrice;
   return totalPrice;
 };
 
-// Cart model based on the Cart schema
 const CartModel = mongoose.model("Cart", CartSchema);
 
 export default CartModel;
