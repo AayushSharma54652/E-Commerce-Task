@@ -2,6 +2,7 @@ import express, { type Express, type Request, type Response } from "express";
 import bodyParser from "body-parser";
 import morgan from "morgan";
 import http from "http";
+import cors from "cors";
 
 const swaggerUi = require('swagger-ui-express');
 const swaggerDocument = require('./swagger-output.json');
@@ -40,6 +41,7 @@ app.use(morgan("dev"));
 app.use(express.json());
 app.use(cookieParser()); // 
 app.use(rateLimiter);
+app.use(cors())
 
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
