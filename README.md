@@ -24,36 +24,34 @@ This is the backend implementation of an e-commerce platform. It allows users to
 
 ## Installation
 
-### Prerequisites
+1. Clone the repository:
+```bash
+git clone https://github.com/yourusername/ecommerce-api.git
+cd ecommerce-api
+```
 
-- Node.js
-- MongoDB (local or Atlas)
-- A `.env` file with necessary configurations
+2. Install dependencies:
+```bash
+npm install
+```
 
-### Steps to Run the Project
+3. Create a `.env` file in the root directory with the following variables:
+```env
+PORT=3000
+MONGODB_URI=your_mongodb_connection_string
+ACCESS_TOKEN_SECRET=your_access_token_secret
+REFRESH_TOKEN_SECRET=your_refresh_token_secret
+```
 
-1. **Clone the repository**:
+4. Build the TypeScript code:
+```bash
+npm run build
+```
 
-    ```bash
-    git clone https://github.com/yourusername/e-commerce-backend.git
-    cd e-commerce-backend
-    ```
-
-2. **Install dependencies**:
-
-    ```bash
-    npm install
-    ```
-
-3. **Set up environment variables**:
-
-    Create a `.env` file in the root of the project and add the following:
-
-    ```
-    PORT=3000
-    JWT_SECRET_KEY=your-jwt-secret-key
-    MONGO_URI=mongodb://localhost:27017/your-database-name
-    ```
+5. Start the server:
+```bash
+npm start
+```
 
 4. **Run the server**:
 

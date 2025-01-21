@@ -1,8 +1,16 @@
 import ProductModel from "./product.schema";
 import { CreateProductDto, UpdateProductDto } from "./product.dto";
 import createHttpError from "http-errors";
-import { type FilterParams } from "./product.dto"; 
+import { type FilterParams } from "./product.dto";
 
+/**
+ * Creates a new product in the database.
+ *
+ * @async
+ * @param {CreateProductDto} productDto - The DTO containing product details to create.
+ * @returns {Promise<ProductModel>} - A promise resolving to the created product.
+ * @throws {HttpError} - Throws a 500 error if the product cannot be created.
+ */
 export const createProduct = async (productDto: CreateProductDto) => {
   try {
     const product = new ProductModel({
@@ -17,6 +25,14 @@ export const createProduct = async (productDto: CreateProductDto) => {
   }
 };
 
+/**
+ * Retrieves a list of products based on the provided filter parameters.
+ *
+ * @async
+ * @param {FilterParams} filterParams - Filters and pagination options for fetching products.
+ * @returns {Promise<{ products: ProductModel[], totalProducts: number }>} - A promise resolving to the list of products and the total count.
+ * @throws {HttpError} - Throws a 500 error if products cannot be fetched.
+ */
 export const getProducts = async (filterParams: FilterParams) => {
   const { search, category, priceRange, isActive, page = 1, limit = 10 } = filterParams;
   
@@ -56,6 +72,14 @@ export const getProducts = async (filterParams: FilterParams) => {
   }
 };
 
+/**
+ * Retrieves a product by its ID.
+ *
+ * @async
+ * @param {string} productId - The ID of the product to retrieve.
+ * @returns {Promise<ProductModel>} - A promise resolving to the product details.
+ * @throws {HttpError} - Throws a 404 error if the product is not found or a 500 error for other issues.
+ */
 export const getProductById = async (productId: string) => {
   try {
     const product = await ProductModel.findById(productId);
@@ -68,10 +92,16 @@ export const getProductById = async (productId: string) => {
   }
 };
 
-export const updateProduct = async (
-  productId: string,
-  updateDto: UpdateProductDto
-) => {
+/**
+ * Updates a product by its ID.
+ *
+ * @async
+ * @param {string} productId - The ID of the product to update.
+ * @param {UpdateProductDto} updateDto - The DTO containing the product details to update.
+ * @returns {Promise<ProductModel>} - A promise resolving to the updated product.
+ * @throws {HttpError} - Throws a 404 error if the product is not found or a 500 error for other issues.
+ */
+export const updateProduct = async (productId: string, updateDto: UpdateProductDto) => {
   try {
     const updatedProduct = await ProductModel.findByIdAndUpdate(
       productId,
@@ -89,6 +119,14 @@ export const updateProduct = async (
   }
 };
 
+/**
+ * Deletes a product by its ID.
+ *
+ * @async
+ * @param {string} productId - The ID of the product to delete.
+ * @returns {Promise<ProductModel>} - A promise resolving to the deleted product.
+ * @throws {HttpError} - Throws a 404 error if the product is not found or a 500 error for other issues.
+ */
 export const deleteProduct = async (productId: string) => {
   try {
     const deletedProduct = await ProductModel.findByIdAndDelete(productId);

@@ -7,7 +7,12 @@ interface CartItem {
   quantity: number;
 }
 
-
+/**
+ * Creates a new cart for the specified user.
+ * @param {string} userId - The ID of the user.
+ * @returns {Promise<object>} The newly created cart.
+ * @throws Will throw an error if cart creation fails.
+ */
 export const createCart = async (userId: string) => {
   try {
     const newCart = new CartModel({ userId, products: [] });
@@ -18,7 +23,12 @@ export const createCart = async (userId: string) => {
   }
 };
 
-
+/**
+ * Retrieves a user's cart by their user ID.
+ * @param {string} userId - The ID of the user.
+ * @returns {Promise<object>} The user's cart.
+ * @throws Will throw an error if the cart is not found or retrieval fails.
+ */
 export const getCartByUserId = async (userId: string) => {
   try {
     const cart = await CartModel.findOne({ userId }).populate("products.productId");
@@ -29,7 +39,14 @@ export const getCartByUserId = async (userId: string) => {
   }
 };
 
-
+/**
+ * Adds an item to the user's cart.
+ * @param {string} userId - The ID of the user.
+ * @param {string} productId - The ID of the product to add.
+ * @param {number} quantity - The quantity of the product to add.
+ * @returns {Promise<object>} The updated cart.
+ * @throws Will throw an error if the product or cart is not found or the operation fails.
+ */
 export const addItemToCart = async (userId: string, productId: string, quantity: number) => {
   try {
     const product = await ProductModel.findById(productId);
@@ -55,6 +72,13 @@ export const addItemToCart = async (userId: string, productId: string, quantity:
   }
 };
 
+/**
+ * Removes an item from the user's cart.
+ * @param {string} userId - The ID of the user.
+ * @param {string} productId - The ID of the product to remove.
+ * @returns {Promise<object>} The updated cart.
+ * @throws Will throw an error if the cart is not found or the operation fails.
+ */
 export const removeItemFromCart = async (userId: string, productId: string) => {
   try {
     const cart = await CartModel.findOne({ userId });
@@ -68,7 +92,14 @@ export const removeItemFromCart = async (userId: string, productId: string) => {
   }
 };
 
-
+/**
+ * Updates the quantity of a product in the user's cart.
+ * @param {string} userId - The ID of the user.
+ * @param {string} productId - The ID of the product to update.
+ * @param {number} quantity - The new quantity of the product.
+ * @returns {Promise<object>} The updated cart.
+ * @throws Will throw an error if the product is not found in the cart or the operation fails.
+ */
 export const updateItemQuantity = async (userId: string, productId: string, quantity: number) => {
   try {
     const cart = await CartModel.findOne({ userId });
@@ -93,6 +124,12 @@ export const updateItemQuantity = async (userId: string, productId: string, quan
   }
 };
 
+/**
+ * Clears all items from the user's cart.
+ * @param {string} userId - The ID of the user.
+ * @returns {Promise<object>} The updated cart with no items.
+ * @throws Will throw an error if the cart is not found or the operation fails.
+ */
 export const clearCart = async (userId: string) => {
   try {
     const cart = await CartModel.findOne({ userId });

@@ -11,7 +11,11 @@ interface DecodedToken {
   name: string;
 }
 
-// Extracts user information from the refresh token
+/**
+ * Extracts user information from the refresh token.
+ * @param {Request} req - The HTTP request object.
+ * @returns {DecodedToken | null} Decoded token information or null if invalid.
+ */
 const getUserFromToken = (req: Request): DecodedToken | null => {
   try {
     const refreshToken = req.cookies?.refreshToken;
@@ -28,6 +32,11 @@ const getUserFromToken = (req: Request): DecodedToken | null => {
   }
 };
 
+/**
+ * Handles the retrieval or creation of a cart for the authenticated user.
+ * @param {Request} req - The HTTP request object.
+ * @param {Response} res - The HTTP response object.
+ */
 export const getOrCreateCartHandler = asyncHandler(async (req: Request, res: Response): Promise<void> => {
   const user = getUserFromToken(req);
   if (!user) {
@@ -45,6 +54,11 @@ export const getOrCreateCartHandler = asyncHandler(async (req: Request, res: Res
   res.send(createResponse(cart, "Cart retrieved successfully"));
 });
 
+/**
+ * Handles adding an item to the user's cart.
+ * @param {Request} req - The HTTP request object.
+ * @param {Response} res - The HTTP response object.
+ */
 export const addToCartHandler = asyncHandler(async (req: Request, res: Response): Promise<void> => {
   const user = getUserFromToken(req);
   if (!user) {
@@ -67,6 +81,11 @@ export const addToCartHandler = asyncHandler(async (req: Request, res: Response)
   }
 });
 
+/**
+ * Handles removing an item from the user's cart.
+ * @param {Request} req - The HTTP request object.
+ * @param {Response} res - The HTTP response object.
+ */
 export const removeFromCartHandler = asyncHandler(async (req: Request, res: Response): Promise<void> => {
   if (!req.user) {
     res.status(401).send(createResponse(null, "User not authenticated"));
@@ -81,6 +100,11 @@ export const removeFromCartHandler = asyncHandler(async (req: Request, res: Resp
   res.send(createResponse(updatedCart, "Item removed from cart successfully"));
 });
 
+/**
+ * Handles updating the quantity of an item in the user's cart.
+ * @param {Request} req - The HTTP request object.
+ * @param {Response} res - The HTTP response object.
+ */
 export const updateItemQuantityHandler = asyncHandler(async (req: Request, res: Response): Promise<void> => {
   if (!req.user) {
     res.status(401).send(createResponse(null, "User not authenticated"));
@@ -96,6 +120,11 @@ export const updateItemQuantityHandler = asyncHandler(async (req: Request, res: 
   res.send(createResponse(updatedCart, "Item quantity updated successfully"));
 });
 
+/**
+ * Handles viewing the user's cart.
+ * @param {Request} req - The HTTP request object.
+ * @param {Response} res - The HTTP response object.
+ */
 export const viewCartHandler = asyncHandler(async (req: Request, res: Response): Promise<void> => {
   if (!req.user) {
     res.status(401).send(createResponse(null, "User not authenticated"));
@@ -113,6 +142,11 @@ export const viewCartHandler = asyncHandler(async (req: Request, res: Response):
   res.send(createResponse(cart, "Cart retrieved successfully"));
 });
 
+/**
+ * Handles clearing the user's cart.
+ * @param {Request} req - The HTTP request object.
+ * @param {Response} res - The HTTP response object.
+ */
 export const clearCartHandler = asyncHandler(async (req: Request, res: Response): Promise<void> => {
   if (!req.user) {
     res.status(401).send(createResponse(null, "User not authenticated"));

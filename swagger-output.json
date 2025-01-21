@@ -556,7 +556,7 @@
         }
       }
     },
-    "/payments": {
+    "/payment": {
       "post": {
         "tags": ["Payments"],
         "summary": "Process payment",

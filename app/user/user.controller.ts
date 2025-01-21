@@ -5,6 +5,12 @@ import { CreateUserDto, LoginUserDto, UpdateUserDto } from "./user.dto";
 import { createResponse } from "../common/helper/response.hepler";
 import { generateTokens } from "../common/helper/token.helper";
 
+/**
+ * Registers a new user.
+ * @param {Request} req - The HTTP request object containing user data.
+ * @param {Response} res - The HTTP response object.
+ * @returns {Promise<void>} Sends a response with the newly created user and access token.
+ */
 export const registerUserHandler = asyncHandler(
   async (req: Request, res: Response): Promise<void> => {
     const { name, email, password, role }: CreateUserDto = req.body;
@@ -39,6 +45,12 @@ export const registerUserHandler = asyncHandler(
   }
 );
 
+/**
+ * Logs in an existing user.
+ * @param {Request} req - The HTTP request object containing login credentials.
+ * @param {Response} res - The HTTP response object.
+ * @returns {Promise<void>} Sends a response with the user details and access token.
+ */
 export const loginUserHandler = asyncHandler(
   async (req: Request, res: Response): Promise<void> => {
     const { email, password }: LoginUserDto = req.body;
@@ -67,22 +79,34 @@ export const loginUserHandler = asyncHandler(
   }
 );
 
+/**
+ * Logs out the current user.
+ * @param {Request} req - The HTTP request object containing the refresh token.
+ * @param {Response} res - The HTTP response object.
+ * @returns {Promise<void>} Sends a response indicating successful logout.
+ */
 export const logoutUserHandler = asyncHandler(
   async (req: Request, res: Response): Promise<void> => {
     const refreshToken = req.cookies?.refreshToken;
-  
+
     if (!refreshToken) {
       res.status(400).send(createResponse(null, "No refresh token provided"));
       return;
     }
 
     await userService.logoutUser(refreshToken);
-  
+
     res.clearCookie("refreshToken", { httpOnly: true, secure: true, sameSite: "strict" });
     res.status(200).send(createResponse(null, "User logged out successfully"));
   }
 );
 
+/**
+ * Retrieves the profile of the currently authenticated user.
+ * @param {Request} req - The HTTP request object.
+ * @param {Response} res - The HTTP response object.
+ * @returns {Promise<void>} Sends a response with the user's profile data.
+ */
 export const getUserProfileHandler = asyncHandler(
   async (req: Request, res: Response): Promise<void> => {
     if (!req.user) {
@@ -97,6 +121,12 @@ export const getUserProfileHandler = asyncHandler(
   }
 );
 
+/**
+ * Updates the profile of the currently authenticated user.
+ * @param {Request} req - The HTTP request object containing updated user data.
+ * @param {Response} res - The HTTP response object.
+ * @returns {Promise<void>} Sends a response with the updated user profile data.
+ */
 export const updateUserProfileHandler = asyncHandler(
   async (req: Request, res: Response): Promise<void> => {
     if (!req.user) {

@@ -9,7 +9,6 @@ const swaggerDocument = require('./swagger-output.json');
 
 
 import { initDB } from "./app/common/services/database.service";
-import { initPassport } from "./app/common/services/passport-jwt.service";
 import { loadConfig } from "./app/common/helper/config.hepler";
 import { type IUser } from "./app/user/user.dto";
 import errorHandler from "./app/common/middleware/error-handler.middleware";
@@ -48,9 +47,6 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 const initApp = async (): Promise<void> => {
   // init mongodb
   await initDB();
-
-  // passport init
-  initPassport();
 
   // set base path to /api
   app.use("/api", routes);
