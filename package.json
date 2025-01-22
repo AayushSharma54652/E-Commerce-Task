@@ -2,6 +2,12 @@
   "name": "template",
   "private": true,
   "scripts": {
+    "typeorm": "typeorm-ts-node-commonjs",
+    "migration:generate": "npm run typeorm -- migration:generate -d app/common/services/database.ts",
+    "migration:create": "npm run typeorm -- migration:create",
+    "migration:run": "npm run typeorm -- migration:run -d app/common/services/database.ts",
+    "migration:revert": "npm run typeorm -- migration:revert -d app/common/services/database.ts",
+    "migration:show": "npm run typeorm -- migration:show -d app/common/services/database.ts",
     "local": "nodemon",
     "start": "cross-env NODE_ENV=local ts-node ./index.ts",
     "dev": "pnpm run build && NODE_ENV=development node ./dist/index.js",
@@ -34,6 +40,7 @@
     "@types/jsonwebtoken": "^9.0.2",
     "@types/morgan": "^1.9.4",
     "@types/multer": "^1.4.12",
+    "@types/node": "^22.10.7",
     "@types/nodemailer": "^6.4.8",
     "@types/passport": "^1.0.12",
     "@types/passport-jwt": "^3.0.9",
@@ -50,10 +57,11 @@
     "husky": "^8.0.0",
     "lint-staged": "^13.2.3",
     "prettier": "^3.0.0",
-    "ts-node": "^10.9.1",
-    "typescript": "*"
+    "ts-node": "^10.9.2",
+    "typescript": "^5.7.3"
   },
   "dependencies": {
+    "@nestjs/typeorm": "^11.0.0",
     "bcrypt": "^5.1.0",
     "bcryptjs": "^2.4.3",
     "body-parser": "^1.20.2",
@@ -73,7 +81,10 @@
     "passport": "^0.6.0",
     "passport-jwt": "^4.0.1",
     "passport-local": "^1.0.0",
+    "pg": "^8.13.1",
+    "reflect-metadata": "^0.2.2",
     "swagger-autogen": "^2.23.7",
-    "swagger-ui-express": "^5.0.1"
+    "swagger-ui-express": "^5.0.1",
+    "typeorm": "^0.3.20"
   }
 }

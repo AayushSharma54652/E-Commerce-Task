@@ -1,19 +1,19 @@
-import ProductModel from "./product.schema";
+import { Product } from "./product.entity";
 import { CreateProductDto, UpdateProductDto } from "./product.dto";
+import { FilterParams } from "./product.dto";
 import createHttpError from "http-errors";
-import { type FilterParams } from "./product.dto";
 
 /**
  * Creates a new product in the database.
  *
  * @async
  * @param {CreateProductDto} productDto - The DTO containing product details to create.
- * @returns {Promise<ProductModel>} - A promise resolving to the created product.
+ * @returns {Promise<Product>} - A promise resolving to the created product.
  * @throws {HttpError} - Throws a 500 error if the product cannot be created.
  */
-export const createProduct = async (productDto: CreateProductDto) => {
+export const createProduct = async (productDto: CreateProductDto): Promise<Product> => {
   try {
-    const product = new ProductModel({
+    const product = Product.create({
       ...productDto,
       isActive: productDto.isActive ?? true,
     });
@@ -30,41 +30,37 @@ export const createProduct = async (productDto: CreateProductDto) => {
  *
  * @async
  * @param {FilterParams} filterParams - Filters and pagination options for fetching products.
- * @returns {Promise<{ products: ProductModel[], totalProducts: number }>} - A promise resolving to the list of products and the total count.
+ * @returns {Promise<{ products: Product[], totalProducts: number }>} - A promise resolving to the list of products and the total count.
  * @throws {HttpError} - Throws a 500 error if products cannot be fetched.
  */
 export const getProducts = async (filterParams: FilterParams) => {
   const { search, category, priceRange, isActive, page = 1, limit = 10 } = filterParams;
-  
-  const query: any = {};
+
+  const queryBuilder = Product.createQueryBuilder("product");
 
   if (search) {
-    query.name = { $regex: search, $options: "i" };
+    queryBuilder.andWhere("product.name ILIKE :search", { search: `%${search}%` });
   }
 
   if (category) {
-    query.category = category;
+    queryBuilder.andWhere("product.category = :category", { category });
   }
 
   if (priceRange) {
     const { min, max } = priceRange;
-    if (min !== undefined) query.price = { ...query.price, $gte: min };
-    if (max !== undefined) query.price = { ...query.price, $lte: max };
+    if (min !== undefined) queryBuilder.andWhere("product.price >= :min", { min });
+    if (max !== undefined) queryBuilder.andWhere("product.price <= :max", { max });
   }
 
   if (isActive !== undefined) {
-    query.isActive = isActive;
+    queryBuilder.andWhere("product.isActive = :isActive", { isActive });
   }
 
-  const skip = (page - 1) * limit;
+  // Pagination and sorting
+  queryBuilder.skip((page - 1) * limit).take(limit).orderBy("product.name", "ASC");
 
   try {
-    const products = await ProductModel.find(query)
-      .skip(skip)
-      .limit(limit)
-      .sort({ name: 1 });
-
-    const totalProducts = await ProductModel.countDocuments(query);
+    const [products, totalProducts] = await queryBuilder.getManyAndCount();
 
     return { products, totalProducts };
   } catch (error) {
@@ -77,12 +73,12 @@ export const getProducts = async (filterParams: FilterParams) => {
  *
  * @async
  * @param {string} productId - The ID of the product to retrieve.
- * @returns {Promise<ProductModel>} - A promise resolving to the product details.
+ * @returns {Promise<Product>} - A promise resolving to the product details.
  * @throws {HttpError} - Throws a 404 error if the product is not found or a 500 error for other issues.
  */
-export const getProductById = async (productId: string) => {
+export const getProductById = async (productId: string): Promise<Product> => {
   try {
-    const product = await ProductModel.findById(productId);
+    const product = await Product.findOne({ where: { id: productId } });
     if (!product) {
       throw createHttpError(404, "Product not found");
     }
@@ -98,22 +94,21 @@ export const getProductById = async (productId: string) => {
  * @async
  * @param {string} productId - The ID of the product to update.
  * @param {UpdateProductDto} updateDto - The DTO containing the product details to update.
- * @returns {Promise<ProductModel>} - A promise resolving to the updated product.
+ * @returns {Promise<Product>} - A promise resolving to the updated product.
  * @throws {HttpError} - Throws a 404 error if the product is not found or a 500 error for other issues.
  */
-export const updateProduct = async (productId: string, updateDto: UpdateProductDto) => {
+export const updateProduct = async (productId: string, updateDto: UpdateProductDto): Promise<Product> => {
   try {
-    const updatedProduct = await ProductModel.findByIdAndUpdate(
-      productId,
-      updateDto,
-      { new: true }
-    );
-
-    if (!updatedProduct) {
+    const product = await Product.findOne({ where: { id: productId } });
+    if (!product) {
       throw createHttpError(404, "Product not found");
     }
 
-    return updatedProduct;
+    // Updating the product properties
+    Object.assign(product, updateDto);
+    
+    await product.save();
+    return product;
   } catch (error) {
     throw createHttpError(500, "Error updating product");
   }
@@ -124,16 +119,18 @@ export const updateProduct = async (productId: string, updateDto: UpdateProductD
  *
  * @async
  * @param {string} productId - The ID of the product to delete.
- * @returns {Promise<ProductModel>} - A promise resolving to the deleted product.
+ * @returns {Promise<Product>} - A promise resolving to the deleted product.
  * @throws {HttpError} - Throws a 404 error if the product is not found or a 500 error for other issues.
  */
-export const deleteProduct = async (productId: string) => {
+export const deleteProduct = async (productId: string): Promise<Product> => {
   try {
-    const deletedProduct = await ProductModel.findByIdAndDelete(productId);
-    if (!deletedProduct) {
+    const product = await Product.findOne({ where: { id: productId } });
+    if (!product) {
       throw createHttpError(404, "Product not found");
     }
-    return deletedProduct;
+
+    await product.remove();
+    return product;
   } catch (error) {
     throw createHttpError(500, "Error deleting product");
   }

@@ -1,7 +1,7 @@
 import express from "express";
 import userRoutes from "./user/user.route";
 import productRoutes from "./product/product.route";
-import cartRoutes from "./cart/cart.route";
+import cartRoutes from "./cart Previous/cart.route";
 import paymentRoutes from "./payment/payment.route";
 import orderRoutes from "./order/order.route";
 

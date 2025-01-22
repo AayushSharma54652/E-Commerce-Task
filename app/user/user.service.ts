@@ -1,5 +1,5 @@
 import { IUser, CreateUserDto, LoginUserDto, UpdateUserDto } from "./user.dto";
-import UserModel from "./user.schema";
+import { User } from "./user.entity";
 import bcrypt from "bcryptjs";
 import { generateTokens } from "../common/helper/token.helper";
 import createHttpError from "http-errors";
@@ -13,14 +13,14 @@ import createHttpError from "http-errors";
 export const createUser = async (userDto: CreateUserDto): Promise<IUser> => {
   const { name, email, password, role } = userDto;
 
-  const existingUser = await UserModel.findOne({ email });
+  const existingUser = await User.findOne({ where: { email } });
   if (existingUser) {
     throw createHttpError(400, "User already exists");
   }
 
   const hashedPassword = await bcrypt.hash(password, 10);
 
-  const newUser = new UserModel({
+  const newUser = User.create({
     name,
     email,
     password: hashedPassword,
@@ -41,7 +41,7 @@ export const createUser = async (userDto: CreateUserDto): Promise<IUser> => {
 export const loginUser = async (loginDto: LoginUserDto) => {
   const { email, password } = loginDto;
 
-  const user = await UserModel.findOne({ email });
+  const user = await User.findOne({ where: { email } });
   if (!user) {
     throw createHttpError(401, "Invalid credentials");
   }
@@ -52,7 +52,7 @@ export const loginUser = async (loginDto: LoginUserDto) => {
   }
 
   const { accessToken, refreshToken } = generateTokens({
-    _id: user._id.toString(),
+    id: user.id,  // Adjusted to use the UUID from PostgreSQL
     email: user.email,
     role: user.role,
   });
@@ -71,13 +71,14 @@ export const loginUser = async (loginDto: LoginUserDto) => {
  * @throws {HttpError} Throws an error if the user is not found.
  */
 export const updateUser = async (userId: string, updateDto: UpdateUserDto): Promise<IUser> => {
-  const updatedUser = await UserModel.findByIdAndUpdate(userId, updateDto, { new: true });
+  const updatedUser = await User.findOne({ where: { id: userId } });
 
   if (!updatedUser) {
     throw createHttpError(404, "User not found");
   }
 
-  return updatedUser;
+  await User.update(userId, updateDto); // Updates the user data
+  return await User.findOne({ where: { id: userId } });
 };
 
 /**
@@ -87,7 +88,7 @@ export const updateUser = async (userId: string, updateDto: UpdateUserDto): Prom
  * @throws {HttpError} Throws an error if the user is not found.
  */
 export const getUserById = async (userId: string): Promise<IUser | null> => {
-  const user = await UserModel.findById(userId);
+  const user = await User.findOne({ where: { id: userId } });
   if (!user) {
     throw createHttpError(404, "User not found");
   }
@@ -101,5 +102,12 @@ export const getUserById = async (userId: string): Promise<IUser | null> => {
  * @returns {Promise<void>} Resolves when the refresh token is invalidated.
  */
 export const logoutUser = async (refreshToken: string): Promise<void> => {
-  await UserModel.findOneAndUpdate({ refreshToken }, { refreshToken: null });
+  const user = await User.findOne({ where: { refreshToken } });
+
+  if (!user) {
+    throw createHttpError(404, "User not found");
+  }
+
+  user.refreshToken = null;
+  await user.save();
 };

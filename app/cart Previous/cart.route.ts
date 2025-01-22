@@ -4,56 +4,60 @@ import {
   addToCartValidation,
   updateCartItemValidation,
   removeFromCartValidation,
+  getCartValidation,
 } from "./cart.validation";
 import {
-  addProductToCart,
-  removeProductFromCart,
-  updateProductQuantity,
-  getUserCart ,
+  getOrCreateCartHandler,
+  addToCartHandler,
+  removeFromCartHandler,
+  updateItemQuantityHandler,
+  viewCartHandler,
+  clearCartHandler,
 } from "./cart.controller";
 import { authMiddleware } from "../common/middleware/auth.middleware";
+
 const router = Router();
 
-/**
- * Route to get or create a cart for the user
- */
-router.get("/", authMiddleware, catchError, getUserCart);
 
-/**
- * Route to add a product to the user's cart
- */
+router.get("/", authMiddleware, catchError, getOrCreateCartHandler);
+
+
 router.post(
   "/add-to-cart",
   authMiddleware,
   addToCartValidation,
   catchError,
-  addProductToCart
+  addToCartHandler
 );
 
-/**
- * Route to remove a product from the user's cart
- */
+
 router.delete(
   "/remove/:productId",
   authMiddleware,
   removeFromCartValidation,
   catchError,
-  removeProductFromCart
+  removeFromCartHandler
 );
 
-/**
- * Route to update the quantity of a product in the user's cart
- */
+
 router.put(
   "/update/:productId",
   authMiddleware,
   updateCartItemValidation,
   catchError,
-  updateProductQuantity
+  updateItemQuantityHandler
 );
 
-/**
- * Route to view the user's cart
- */
+
+router.get(
+  "/view-cart",
+  authMiddleware,
+  getCartValidation,
+  catchError,
+  viewCartHandler
+);
+
+
+router.delete("/clear-cart", authMiddleware, catchError, clearCartHandler);
 
 export default router;

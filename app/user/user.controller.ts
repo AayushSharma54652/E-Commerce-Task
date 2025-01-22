@@ -17,7 +17,7 @@ export const registerUserHandler = asyncHandler(
     const newUser = await userService.createUser({ name, email, password, role });
 
     const { accessToken, refreshToken } = generateTokens({
-      _id: newUser._id.toString(),
+      id: newUser.id,  // Adjusted to use the UUID from PostgreSQL
       email: newUser.email,
       role: newUser.role,
     });
@@ -32,7 +32,7 @@ export const registerUserHandler = asyncHandler(
       createResponse(
         {
           user: {
-            id: newUser._id.toString(),
+            id: newUser.id,
             name: newUser.name,
             email: newUser.email,
             role: newUser.role,
@@ -66,7 +66,7 @@ export const loginUserHandler = asyncHandler(
       createResponse(
         {
           user: {
-            id: user._id.toString(),
+            id: user.id,  // Adjusted to use the UUID from PostgreSQL
             name: user.name,
             email: user.email,
             role: user.role,
@@ -114,7 +114,7 @@ export const getUserProfileHandler = asyncHandler(
       return;
     }
 
-    const userId = req.user._id;
+    const userId = req.user.id;  // Adjusted to use the UUID from PostgreSQL
     const user = await userService.getUserById(userId);
 
     res.send(createResponse(user, "User profile retrieved successfully"));
@@ -134,7 +134,7 @@ export const updateUserProfileHandler = asyncHandler(
       return;
     }
 
-    const userId = req.user._id;
+    const userId = req.user.id;  // Adjusted to use the UUID from PostgreSQL
     const updateData: UpdateUserDto = req.body;
 
     const updatedUser = await userService.updateUser(userId, updateData);

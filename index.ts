@@ -1,8 +1,12 @@
+import "reflect-metadata";
 import express, { type Express, type Request, type Response } from "express";
 import bodyParser from "body-parser";
 import morgan from "morgan";
 import http from "http";
 import cors from "cors";
+import "reflect-metadata";
+import { connectDatabase } from ".//app/common/services/database";
+
 
 const swaggerUi = require('swagger-ui-express');
 const swaggerDocument = require('./swagger-output.json');
@@ -44,24 +48,48 @@ app.use(cors())
 
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
-const initApp = async (): Promise<void> => {
-  // init mongodb
-  await initDB();
+// const initApp = async (): Promise<void> => {
+//   // init mongodb
+//   await initDB();
 
-  // set base path to /api
-  app.use("/api", routes);
+//   // set base path to /api
+//   app.use("/api", routes);
 
-  app.get("/", (req: Request, res: Response) => {
-    res.send({ status: "ok" });
-  });
+//   app.get("/", (req: Request, res: Response) => {
+//     res.send({ status: "ok" });
+//   });
 
 
 
-  // error handler
-  app.use(errorHandler);
-  http.createServer(app).listen(port, () => {
-    console.log("Server is running on port", port);
-  });
-};
+//   // error handler
+//   app.use(errorHandler);
+//   http.createServer(app).listen(port, () => {
+//     console.log("Server is running on port", port);
+//   });
+// };
 
-void initApp();
+// void initApp();
+
+
+(async () => {
+  try {
+    // Connect to the database
+    await connectDatabase();
+
+    // Middleware and routes setup
+    app.use(express.json());
+
+    app.get("/", (req, res) => {
+      res.send("API is running!");
+    });
+
+    app.use("/api", routes);
+
+    // Start the server
+    app.listen(port, () => {
+      console.log(`Server is running on http://localhost:${port}`);
+    });
+  } catch (error) {
+    console.error("Application failed to start:", error);
+  }
+})();

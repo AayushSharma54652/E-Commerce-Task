@@ -5,7 +5,7 @@ import { config } from "dotenv";
 config();
 
 interface TokenPayload {
-  _id: string;
+  id: string;
   email: string;
   role: "CUSTOMER" | "ADMIN";
 }

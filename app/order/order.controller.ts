@@ -13,7 +13,7 @@ import { OrderStatus } from "./order.dto";
  * @returns {Promise<void>} - A promise that resolves when the order is created.
  */
 export const createOrderHandler = asyncHandler(async (req: Request, res: Response): Promise<void> => {
-  const userId = req.user?._id;
+  const userId = req.user?.id;
 
   if (!userId) {
     res.status(401).send(createResponse(null, "User is not authenticated"));
@@ -35,7 +35,7 @@ export const createOrderHandler = asyncHandler(async (req: Request, res: Respons
  * @returns {Promise<void>} - A promise that resolves when the order is fetched successfully or an error response is sent.
  */
 export const getOrderByIdHandler = asyncHandler(async (req: Request, res: Response): Promise<void> => {
-  const userId = req.user?._id;
+  const userId = req.user?.id;
   const orderId = req.params.id;
 
   if (!userId) {
@@ -62,7 +62,7 @@ export const getOrderByIdHandler = asyncHandler(async (req: Request, res: Respon
  * @returns {Promise<void>} - A promise that resolves when all orders are fetched or an error response is sent.
  */
 export const getAllOrdersHandler = asyncHandler(async (req: Request, res: Response): Promise<void> => {
-  const userId = req.user?._id;
+  const userId = req.user?.id;
 
   if (!userId) {
     res.status(401).send(createResponse(null, "User is not authenticated"));
@@ -115,7 +115,7 @@ export const updateOrderStatusHandler = asyncHandler(async (req: Request, res: R
  * @returns {Promise<void>} - A promise that resolves when the order is deleted successfully or an error response is sent.
  */
 export const deleteOrderHandler = asyncHandler(async (req: Request, res: Response): Promise<void> => {
-  const userId = req.user?._id;
+  const userId = req.user?.id;
   const orderId = req.params.id;
 
   if (!userId) {
@@ -142,7 +142,7 @@ export const deleteOrderHandler = asyncHandler(async (req: Request, res: Respons
  * @returns {Promise<void>} - A promise that resolves when the order status is fetched successfully or an error response is sent.
  */
 export const getOrderStatusHandler = asyncHandler(async (req: Request, res: Response): Promise<void> => {
-  const userId = req.user?._id;
+  const userId = req.user?.id;
   const orderId = req.params.id;
 
   if (!userId) {

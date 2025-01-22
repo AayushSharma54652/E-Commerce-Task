@@ -1,4 +1,4 @@
-import { type BaseSchema } from "../common/dto/base.dto";
+import { BaseSchema } from "../common/dto/base.dto";
 
 export interface IProduct extends BaseSchema {
   name: string;

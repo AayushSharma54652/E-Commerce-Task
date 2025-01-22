@@ -6,7 +6,7 @@ type UserRole = "ADMIN" | "CUSTOMER";
 
 interface DecodedToken {
   role: UserRole;
-  _id: string;
+  id: string;
   email: string;
   name: string;
   exp?: number;
@@ -37,7 +37,7 @@ export const isAdmin = (req: Request, res: Response, next: NextFunction): void =
 
     // Optionally attach the decoded token to the request for later use
     req.user = {
-      _id: decoded._id,
+      id: decoded.id,
       email: decoded.email,
       name: decoded.name,
       role: decoded.role,
